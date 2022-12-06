@@ -1,0 +1,38 @@
+{
+	"manifest_version": 2,
+	"name": "Dice Tray",
+	"description": "Adds a Dice Tray to DnDBeyond",
+	"version": "0.01",
+	"content_scripts": [
+		{
+			"matches": [
+				"https://www.dndbeyond.com/*"
+			],
+			"js": [
+				"content.js", 
+				"jquery-3.6.0.min.js"
+			]
+		}
+	],
+	"background":{
+		"scripts": ["background.js", "jquery-3.6.0.min.js"]
+	},
+	"permissions": [
+		"*://*.dndbeyond.com/*",
+		"storage"
+	],
+	"options_ui": {
+		"page": "options.html",
+		"open_in_tab": true
+	},
+	"web_accessible_resources": [
+		"jquery-3.6.0.min.js",
+		"ajaxQueue/*",
+		"diceTray.css",
+		"background.js",
+		"content.js"
+	],
+	"browser_action": {
+		"default_popup": "options.html"
+ 	}
+}
