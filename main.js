@@ -214,7 +214,7 @@ let dicetrayobserver = new MutationObserver((mutations) => {
       let node = mutation.addedNodes[i]
       if ((node.className == 'dice-rolling-panel' || $('.dice-rolling-panel').length>0) && !window.diceTrayAdded){
         window.diceTrayAdded = true;
-            buildDiceTrayButton();
+        buildDiceTrayButton();
       }
     }
   })
