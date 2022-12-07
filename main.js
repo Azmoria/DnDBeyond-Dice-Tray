@@ -189,8 +189,8 @@ async function diceTray() {
 					const red = frame.data[i + 0];
 					const green = frame.data[i + 1];
 					const blue = frame.data[i + 2];
-					//if ((red < 8) && (green < 8) && (blue < 8))
-						//frame.data[i + 3] = 128;
+					if ((red < 28) && (green < 28) && (blue < 28))
+						frame.data[i + 3] = 128;
 					if ((red < 14) && (green < 14) && (blue < 14))
 						frame.data[i + 3] = 0;
 					
@@ -216,6 +216,7 @@ let dicetrayobserver = new MutationObserver((mutations) => {
         window.diceTrayAdded = true;
         buildDiceTrayButton();
       }
+
     }
   })
 })
