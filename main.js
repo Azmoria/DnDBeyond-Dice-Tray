@@ -147,9 +147,7 @@ let dicetrayobserver = new MutationObserver((mutations) => {
       let node = mutation.addedNodes[i]
       if ((node.className == 'dice-rolling-panel' || $('.dice-rolling-panel').length>0) && !window.diceTrayAdded){
         window.diceTrayAdded = true;
-        setTimeout(function(){
             buildDiceTrayButton();
-        }, 2000)
       }
     }
   })
@@ -172,21 +170,18 @@ function buildDiceTrayButton(){
         childWindow = diceTray();
         window.childWindow = childWindow;
         window.parent.childWindow = childWindow;  
-	});
-	browser.storage.local.get("dicetraydata", function(result){
-		$('body').css('--dicetray-background-color', result.dicetraydata['color'].value)
-    	$('body').css('--dicetray-background-image', `url(${result.dicetraydata['image url'].value})`)  
-	 	result.dicetraydata  
-		
+        var styleobserver = new MutationObserver(function(mutations) {
+	    mutations.forEach(function(mutationRecord) {
+	    		let dicetraycolor = $('body').css('--dicetray-background-color');
+				let dicetrayimageurl = $('body').css('--dicetray-background-image');  
+				
+				$(childWindow.document).find('body').css('--dicetray-background-color', dicetraycolor)
+				$(childWindow.document).find('body').css('--dicetray-background-image', dicetrayimageurl) 
+		        console.log('style changed!');
+		    });    
+		});
+
+		var target = document.getElementById('site');
+		styleobserver.observe(target, { attributes : true, attributeFilter : ['style'] });
 	});
 }
-browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    $('body').css('--dicetray-background-color', message.key['color'].value)
-    $('body').css('--dicetray-background-image', `url(${message.key['image url'].value})`)   
-    if(childWindow != undefined){
-        $(childWindow.document).find('body').css('--dicetray-background-color', message.key['color'].value)
-        $(childWindow.document).find('body').css('--dicetray-background-image',`url(${message.key['image url'].value})`)
-    }
-    console.log(message)
-// return true <- this and the callback in background.js are what caused a crash in extensions page of my Google chrome
-});

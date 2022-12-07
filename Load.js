@@ -1,16 +1,3 @@
-
-// load stylesheets
-[
-	"status.css"
-].forEach(function(value, index, array) {
-	let l = document.createElement('link');
-	l.href = chrome.runtime.getURL(value);
-	l.rel = "stylesheet";
-	console.log(`attempting to append ${value}`);
-	(document.head || document.documentElement).appendChild(l);
-});
-
-
 // load scripts
 let scripts = [
 	// External Dependencies

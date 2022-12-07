@@ -31,7 +31,8 @@
 		"ajaxQueue/*",
 		"diceTray.css",
 		"background.js",
-		"content.js"
+		"content.js",
+		"main.js"
 	],
 	"browser_action": {
 		"default_popup": "options.html"

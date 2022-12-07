@@ -8,7 +8,7 @@ if(localData != undefined){
 
 $(".spectrum").spectrum({
     showAlpha: true,
-    showPalette: true,
+    showPalette: false,
     localStorageKey: "spectrum.diceTray",
     clickoutFiresChange: true,
     showInitial: true,
