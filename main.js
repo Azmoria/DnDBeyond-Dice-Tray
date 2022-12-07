@@ -135,6 +135,57 @@ async function diceTray() {
 
 	$(childWindow.document).find('body').css('--dicetray-background-color', dicetraycolor)
 	$(childWindow.document).find('body').css('--dicetray-background-image', dicetrayimageurl) 
+
+/*start temporary chrome fix*/
+	let isChrome = window.chrome;
+	if(isChrome){
+		var dicecanvas=$(`<canvas width='${window.innerWidth}' height='${window.innerHeight}' class='streamer-canvas' />`);
+		$(video).css({
+			'visibility': 'hidden'
+		})
+		dicecanvas.attr("id","streamer-canvas");
+		//dicecanvas.css("opacity",0.5);
+		dicecanvas.css("position","fixed");
+		dicecanvas.css("top","50%");
+		dicecanvas.css("left","50%");
+		dicecanvas.css("transform","translate(-50%, -50%)");
+		dicecanvas.css("z-index",60000);
+		dicecanvas.css("touch-action","none");
+		dicecanvas.css("pointer-events","none");
+		dicecanvas.css("filter", "drop-shadow(-16px 18px 15px black)");
+		dicecanvas.css("clip-path", "inset(2px 2px 2px 2px)");
+		$(childWindow.document).find('body').append(dicecanvas);
+		let canvasStream=dicecanvas.get(0);
+		let ctx=canvasStream.getContext('2d');
+		let tmpcanvas = childWindow.document.createElement("canvas");
+		tmpcanvas.width = window.innerWidth;
+		tmpcanvas.height = window.innerHeight;
+
+		let updateCanvas=function(){
+			let tmpctx = tmpcanvas.getContext("2d");
+			window.requestAnimationFrame(updateCanvas);
+			tmpctx.drawImage(video, 0, 0, tmpcanvas.width, tmpcanvas.height);
+			if(tmpcanvas.width>0)
+			{
+				const frame = tmpctx.getImageData(0, 0, tmpcanvas.width, tmpcanvas.height);
+
+				for (let i = 0; i < frame.data.length; i += 4) {
+					const red = frame.data[i + 0];
+					const green = frame.data[i + 1];
+					const blue = frame.data[i + 2];
+					//if ((red < 8) && (green < 8) && (blue < 8))
+						//frame.data[i + 3] = 128;
+					if ((red < 14) && (green < 14) && (blue < 14))
+						frame.data[i + 3] = 0;
+					
+					
+				}
+				ctx.putImageData(frame,0,0);	
+			}
+		};
+		updateCanvas();
+	}
+/*end temporary chrome fix*/
     return childWindow;
 }
 
