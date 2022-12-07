@@ -160,6 +160,22 @@ async function diceTray() {
 		let tmpcanvas = childWindow.document.createElement("canvas");
 		tmpcanvas.width = window.innerWidth;
 		tmpcanvas.height = window.innerHeight;
+		video.addEventListener("resize", function(){
+  		let videoAspectRatio = video.videoWidth / video.videoHeight
+			if (video.videoWidth > video.videoHeight)
+			{
+				tmpcanvas.width = Math.min(video.videoWidth, window.innerWidth);
+				tmpcanvas.height = Math.min(video.videoHeight, window.innerWidth / videoAspectRatio);		
+			}
+			else {
+				tmpcanvas.width = Math.min(video.videoWidth, window.innerHeight / (1 / videoAspectRatio));
+				tmpcanvas.height = Math.min(video.videoHeight, window.innerHeight);		
+			}
+			dicecanvas.attr("width", tmpcanvas.width + "px");
+			dicecanvas.attr("height", tmpcanvas.height  + "px");
+			dicecanvas.css("height",tmpcanvas.height);
+			dicecanvas.css("width",tmpcanvas.width );
+  		});
 
 		let updateCanvas=function(){
 			let tmpctx = tmpcanvas.getContext("2d");
