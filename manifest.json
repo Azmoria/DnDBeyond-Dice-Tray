@@ -9,6 +9,7 @@
 				"https://www.dndbeyond.com/*"
 			],
 			"js": [
+				"Load.js",
 				"content.js", 
 				"jquery-3.6.0.min.js"
 			]
