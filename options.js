@@ -16,6 +16,7 @@ $(".spectrum").spectrum({
     allowEmpty:true,
     showPalette: true,
     preferredFormat: "hex",
+    color: "#009933",
     palette: [
         ["#000","#444","#666","#999","#ccc","#eee","#f3f3f3","#fff"],
         ["#f00","#f90","#ff0","#0f0","#0ff","#00f","#90f","#f0f"],
@@ -47,7 +48,8 @@ $('input').on('blur change', function(){
     saveOptionsSentAsData({'dicetraydata': savedData});
 });
 
-function saveOptionsSentAsData(data,callback=function(){}) {
+function saveOptionsSentAsData(data,callback=function(){})
+{
     //Options data received as a message from options.js is 
     //  stored in storeage.local.
     chrome.storage.local.set(data, function() {
@@ -58,3 +60,14 @@ function saveOptionsSentAsData(data,callback=function(){}) {
     });
 }
 
+chrome.storage.onChanged.addListener((changes, namespace) => {
+  for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+    console.log(
+      `Storage key "${key}" in namespace "${namespace}" changed.`,
+      `Old value was "${oldValue}", new value is "${newValue}".`
+    );
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+        chrome.tabs.sendMessage(tabs[0].id, {key: newValue});  
+    });
+  }
+});
