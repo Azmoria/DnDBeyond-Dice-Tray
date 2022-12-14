@@ -136,7 +136,7 @@ async function diceTray() {
 	$(childWindow.document).find('body').css('--dicetray-background-color', dicetraycolor)
 	$(childWindow.document).find('body').css('--dicetray-background-image', dicetrayimageurl) 
 
-/*start temporary chrome fix*/
+/*start temporary chrome fix
 	let isChrome = window.chrome;
 	if(isChrome){
 		var dicecanvas=$(`<canvas width='${window.innerWidth}' height='${window.innerHeight}' class='streamer-canvas' />`);
