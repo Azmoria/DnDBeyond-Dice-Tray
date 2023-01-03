@@ -12,7 +12,8 @@
 				"Load.js",
 				"content.js", 
 				"jquery-3.6.0.min.js"
-			]
+			],
+			"all_frames": true
 		}
 	],
 	"permissions": [

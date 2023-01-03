@@ -1,6 +1,7 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     $('body').css('--dicetray-background-color', message.key['color'].value)
-    $('body').css('--dicetray-background-image', `url(${message.key['image url'].value})`)   
+    $('body').css('--dicetray-background-image', `url(${message.key['image url'].value})`)  
+    $('body').css('--dice-speed', message.key['diceSpeed'].value);
     console.log(message)
     return true;
 });
@@ -14,5 +15,5 @@ chrome.storage.local.get("dicetraydata", function(result){
         $('body').css('--dicetray-background-color', `#009933`)
         $('body').css('--dicetray-background-image', ``) 
     }
-   
+    $('body').css('--dice-speed', result.dicetraydata['diceSpeed'].value);
 });

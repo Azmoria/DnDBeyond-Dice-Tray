@@ -1,28 +1,28 @@
 var childWindow = null;
 
-async function resizeChild(child){
-    var winHeight = await window.innerHeight;
-    var winWidth = await window.innerWidth;
-    var childHTML = await child.document.documentElement;
+function resizeChild(child){
+    var winHeight =  window.innerHeight;
+    var winWidth =  window.innerWidth;
+    var childHTML =  child.document.documentElement;
     if(winHeight > (screen.height-2) && winWidth == screen.width) {
-        await childHTML.requestFullscreen();
+        childHTML.requestFullscreen();
     }
     else if(winWidth<screen.width){
-        await child.resizeTo(window.outerWidth, winHeight+68);
+        child.resizeTo(window.outerWidth, winHeight+68);
     }
     else{
-        await child.resizeTo(window.outerWidth, winHeight+61);
+        child.resizeTo(window.outerWidth, winHeight+61);
     }
 }
 
-async function diceTray() {
+function diceTray() {
     if(window.parent != null && window.parent.childWindow != undefined && window.parent.childWindow != null) {
         childWindow = window.parent.childWindow;
         window.childWindow = childWindow;
         console.log(childWindow.name + " is the child of parent window");
     }
     if (childWindow == null || window.childWindow.closed != false){
-        childWindow = await window.open('', 'Dice Tray', 'toolbar=0,location=0,menubar=0');
+        childWindow = window.open('', 'Dice Tray', 'toolbar=0,location=0,menubar=0');
         window.childWindow = childWindow;
         window.parent.childWindow = childWindow;
         console.log(childWindow.name + " is the child of this window");
@@ -32,36 +32,37 @@ async function diceTray() {
         }; 
     }
     if(childWindow.document.querySelector('video') == undefined || childWindow.document.querySelector('video') == null){
-        await childWindow.document.write('<video id="video0" muted autoplay></video>');
+        childWindow.document.write('<video id="video0" muted autoplay></video>');
         resizeChild(childWindow);
     }
     if(window.location.href.indexOf("abovevtt") > -1) {
-        await childWindow.history.pushState({}, "Dice Tray - AboveVTT", window.location.href+"#DiceTray");
+        childWindow.history.pushState({}, "Dice Tray - AboveVTT", window.location.href+"#DiceTray");
         childWindow.document.title = "Dice Tray - AboveVTT";
     }
     else if (window.parent.location.href.indexOf("abovevtt") > -1) {
-        await childWindow.history.pushState({}, "Dice Tray - AboveVTT", window.parent.location.href+"#DiceTray");
+        childWindow.history.pushState({}, "Dice Tray - AboveVTT", window.parent.location.href+"#DiceTray");
         childWindow.document.title = "Dice Tray - AboveVTT";
     }
     else{
-        await childWindow.history.pushState({}, "Dice Tray - " + document.title, window.location.href+"#DiceTray");
-        childWindow.document.title = "Dice Tray - " + await document.title;
+        childWindow.history.pushState({}, "Dice Tray - " + document.title, window.location.href+"#DiceTray");
+        childWindow.document.title = "Dice Tray - " +  document.title;
     }
-    const body = await childWindow.document.querySelector('body');
-    var canvas = await document.querySelector('.dice-rolling-panel__container');
-    const video = await childWindow.document.querySelector('#video0');
-    await body.setAttribute("id", 'diceTrayBody');
-    var stream = await canvas.captureStream(30);
+    const body = childWindow.document.querySelector('body');
+    var canvas =  document.querySelector('.dice-rolling-panel__container');
+    const video =  childWindow.document.querySelector('#video0');
+    body.setAttribute("id", 'diceTrayBody');
+    var stream =  canvas.captureStream(30);
     if(video.srcObject == undefined || video.srcObject == null){
-        stream.label = await window.location.href;
-        video.srcObject = await stream;
+        stream.label =  window.location.href;
+        video.srcObject =  stream;
+       	chromeTempFix(video);
     }
     else {
-        canvas = await document.querySelector('.dice-rolling-panel__container');
-        var newStream = await canvas.captureStream(30);
-        newStream.label = await window.location.href;
+        canvas = document.querySelector('.dice-rolling-panel__container');
+        var newStream = canvas.captureStream(30);
+        newStream.label = window.location.href;
         var n = 0;
-        var videoTags = await childWindow.document.getElementsByTagName("video");
+        var videoTags = childWindow.document.getElementsByTagName("video");
         let addRemove = "Video added to ";
         for (let i=0; i < videoTags.length; i++){
             if(videoTags[i].srcObject.label.indexOf("character") > -1 && window.location.href.indexOf("character") > -1) {
@@ -91,14 +92,15 @@ async function diceTray() {
             }
         }
         if (!childWindow.document.querySelector('#video'+n)){
-            await childWindow.document.write('<video id="video'+n+'" muted autoplay></video>');
+            childWindow.document.write('<video id="video'+n+'" muted autoplay></video>');
         }
-        const newVideo = await childWindow.document.querySelector('#video'+n);
-        newVideo.srcObject = await newStream;
+        const newVideo = childWindow.document.querySelector('#video'+n);
+        newVideo.srcObject = newStream;
+        chromeTempFix(newVideo);
         console.log(addRemove + childWindow.name);
     }
 
-    await window.addEventListener('resize', function(event){
+   	window.addEventListener('resize', function(event){
         if(childWindow.location.href.indexOf("abovevtt") > -1 && childWindow.location.href.indexOf("encounter") > -1 && childWindow.location.href.indexOf("#DiceTray") > -1){}
         else{
             if(childWindow.innerHeight < (childWindow.screen.height-1) && childWindow.innerwidth != childWindow.screen.width) {
@@ -136,7 +138,50 @@ async function diceTray() {
 	$(childWindow.document).find('body').css('--dicetray-background-color', dicetraycolor)
 	$(childWindow.document).find('body').css('--dicetray-background-image', dicetrayimageurl) 
 
-/*start temporary chrome fix
+    return childWindow;
+}
+
+let dicetrayobserver = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    if (!mutation.addedNodes) return
+
+    for (let i = 0; i < mutation.addedNodes.length; i++) {
+      // do things to your newly added nodes here
+      let node = mutation.addedNodes[i]
+      if ((node.className == 'dice-rolling-panel' || $('.dice-rolling-panel').length>0) && !window.diceTrayAdded){
+        window.diceTrayAdded = true;
+        buildDiceTrayButton();
+      }
+      if(node.className == 'dice-rolling-panel__container' && (childWindow == null || window.childWindow.closed != false)){
+      	console.log('Added video to Dice Tray');
+      	diceTray();
+      }
+    }
+  })
+})
+
+dicetrayobserver.observe(document.body, {
+    childList: true
+  , subtree: true
+  , attributes: false
+  , characterData: false
+});
+
+var styleobserver = new MutationObserver(function(mutations) {
+mutations.forEach(function(mutationRecord) {
+		let dicespeed= $('body').css('--dice-speed');
+	
+		window.requestAnimationFrame = function(e) { setTimeout(e, 100-dicespeed); } 
+        console.log('dice speed changed!');
+    });    
+});
+
+var target = document.getElementById('site');
+styleobserver.observe(target, { attributes : true, attributeFilter : ['style'] });
+
+
+function chromeTempFix(video){
+	/*start temporary chrome fix*/
 	let isChrome = window.chrome;
 	if(isChrome){
 		var dicecanvas=$(`<canvas width='${window.innerWidth}' height='${window.innerHeight}' class='streamer-canvas' />`);
@@ -178,7 +223,9 @@ async function diceTray() {
   		});
 
 		let updateCanvas=function(){
-			let tmpctx = tmpcanvas.getContext("2d");
+			let tmpctx = tmpcanvas.getContext("2d", {
+				willReadFrequently: true,
+			});
 			window.requestAnimationFrame(updateCanvas);
 			tmpctx.drawImage(video, 0, 0, tmpcanvas.width, tmpcanvas.height);
 			if(tmpcanvas.width>0)
@@ -202,31 +249,8 @@ async function diceTray() {
 		updateCanvas();
 	}
 /*end temporary chrome fix*/
-    return childWindow;
 }
 
-let dicetrayobserver = new MutationObserver((mutations) => {
-  mutations.forEach((mutation) => {
-    if (!mutation.addedNodes) return
-
-    for (let i = 0; i < mutation.addedNodes.length; i++) {
-      // do things to your newly added nodes here
-      let node = mutation.addedNodes[i]
-      if ((node.className == 'dice-rolling-panel' || $('.dice-rolling-panel').length>0) && !window.diceTrayAdded){
-        window.diceTrayAdded = true;
-        buildDiceTrayButton();
-      }
-
-    }
-  })
-})
-
-dicetrayobserver.observe(document.body, {
-    childList: true
-  , subtree: true
-  , attributes: false
-  , characterData: false
-})
 
 function buildDiceTrayButton(){
 	$('#site').css('--theme-color', $('.ddbc-svg--themed path').css('fill'));
@@ -253,3 +277,4 @@ function buildDiceTrayButton(){
 		styleobserver.observe(target, { attributes : true, attributeFilter : ['style'] });
 	});
 }
+			
