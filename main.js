@@ -1,4 +1,5 @@
-var childWindow = null;
+var childWindow;
+
 
 function resizeChild(child){
     var winHeight =  window.innerHeight;
@@ -16,22 +17,18 @@ function resizeChild(child){
 }
 
 function diceTray() {
-    if(window.parent != null && window.parent.childWindow != undefined && window.parent.childWindow != null) {
+    if( window.parent.childWindow != undefined && window.parent.childWindow.closed != true) {
         childWindow = window.parent.childWindow;
         window.childWindow = childWindow;
         console.log(childWindow.name + " is the child of parent window");
     }
-    if (childWindow == null || window.childWindow.closed != false){
+    if (window.childWindow == undefined || window.childWindow.closed !== false){
         childWindow = window.open('', 'Dice Tray', 'toolbar=0,location=0,menubar=0');
         window.childWindow = childWindow;
         window.parent.childWindow = childWindow;
         console.log(childWindow.name + " is the child of this window");
-         childWindow.onbeforeunload = function(){
-            delete window.childWindow;
-            delete window.parent.childWindow;
-        }; 
     }
-    if(childWindow.document.querySelector('video') == undefined || childWindow.document.querySelector('video') == null){
+    if(childWindow.document.querySelector('video') == undefined){
         childWindow.document.write('<video id="video0" muted autoplay></video>');
         resizeChild(childWindow);
     }
@@ -152,13 +149,13 @@ let dicetrayobserver = new MutationObserver((mutations) => {
         window.diceTrayAdded = true;
         buildDiceTrayButton();
       }
-      if(node.className == 'dice-rolling-panel__container' && (childWindow == null || window.childWindow.closed != false)){
+      if(node.className == 'dice-rolling-panel__container' && (window.parent.childWindow != undefined && window.parent.childWindow.closed != true)){
       	console.log('Added video to Dice Tray');
       	diceTray();
       }
     }
   })
-})
+});
 
 dicetrayobserver.observe(document.body, {
     childList: true
