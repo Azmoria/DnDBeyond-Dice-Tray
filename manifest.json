@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "Dice Tray",
 	"description": "Adds a Dice Tray to DnDBeyond",
-	"version": "0.03",
+	"version": "0.04",
 	"content_scripts": [
 		{
 			"matches": [
