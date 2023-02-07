@@ -166,7 +166,7 @@ var styleobserver = new MutationObserver(function(mutations) {
 mutations.forEach(function(mutationRecord) {
 		let dicespeed= $('body').css('--dice-speed');
 	
-		window.requestAnimationFrame = function(e) { setTimeout(e, 100-dicespeed); } 
+		window.requestAnimationFrame = function(e) { setTimeout(e, 36-dicespeed); } 
         console.log('dice speed changed!');
     });    
 });
