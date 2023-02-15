@@ -2,7 +2,12 @@ let localData = localStorage.getItem("DiceTraySavedData")
 if(localData != undefined){
    let readImportedData = JSON.parse(localData);
     for(item in readImportedData){
-        $(`input[data-name='${readImportedData[item].name}'`).val(`${readImportedData[item].value}`)
+        if(readImportedData[item].name != 'hideDice'){
+            $(`input[data-name='${readImportedData[item].name}'`).val(`${readImportedData[item].value}`)
+        }
+        else{
+            $(`select[data-name='${readImportedData[item].name}'`).val(`${readImportedData[item].value}`)
+        }
     }
 }
 
@@ -28,7 +33,7 @@ $(".spectrum").spectrum({
     ]
 });
 
-$('input').on('blur change', function(){
+$('input, select').on('blur change', function(){
     let savedData = {};
     let inputs = $('input[data-name]')
     for(i = 0; i < inputs.length; i++){
@@ -41,11 +46,24 @@ $('input').on('blur change', function(){
         }
         savedData[newData.name] = newData;
     }
+    let selects = $('select[data-name]')
+        for(i = 0; i < selects.length; i++){
+        let newData = {
+            name: $(selects[i]).attr('data-name'),
+            value: selects[i].value
+        }
+        if(newData.name == undefined){
+            console.log('undefined');
+        }
+        savedData[newData.name] = newData;
 
+    }
+       console.log(savedData);
     let jsonSavedData = JSON.stringify(savedData)
     localStorage.setItem("DiceTraySavedData", jsonSavedData);
     saveOptionsSentAsData({'dicetraydata': savedData});
 });
+
 
 function saveOptionsSentAsData(data,callback=function(){})
 {
