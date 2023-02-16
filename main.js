@@ -146,10 +146,16 @@ let dicetrayobserver = new MutationObserver((mutations) => {
       if ((node.className == 'dice-rolling-panel' || $('.dice-rolling-panel').length>0) && !window.diceTrayAdded){
         window.diceTrayAdded = true;
         buildDiceTrayButton();
+        if((window.parent.childWindow == undefined || window.parent.childWindow.closed == true)){
+            dicetrayobserver.disconnect();
+        }
       }
       if(node.className == 'dice-rolling-panel__container' && (window.parent.childWindow != undefined && window.parent.childWindow.closed != true)){
       	console.log('Added video to Dice Tray');
       	diceTray();
+        if(window.diceTrayAdded == true){
+            dicetrayobserver.disconnect();
+        }
       }
     }
   })

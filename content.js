@@ -2,7 +2,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     $('body').css('--dicetray-background-color', message.key['color'].value)
     $('body').css('--dicetray-background-image', `url(${message.key['image url'].value})`)  
     $('body').css('--dice-speed', message.key['diceSpeed'].value);
-    $('.dice-rolling-panel__container').css('visibility', message.key['hideDice'].value)
+    $('#hideDice').remove();
+    $('head').append(`<style type="text/css" id='hideDice'>.dice-rolling-panel__container{visibility: ${message.key['hideDice'].value} !important}</style>`);
+ 
     console.log(message)
     return true;
 });
@@ -17,7 +19,7 @@ chrome.storage.local.get("dicetraydata", function(result){
         $('body').css('--dicetray-background-image', ``) 
     }
     $('body').css('--dice-speed', result.dicetraydata['diceSpeed'].value);
-    setTimeout(function(){
-        $('.dice-rolling-panel__container').css('visibility', result.dicetraydata['hideDice'].value)
-    }, 1000);
+    $('#hideDice').remove();
+    $('head').append(`<style type="text/css" id='hideDice'>.dice-rolling-panel__container{visibility: ${result.dicetraydata['hideDice'].value} !important}</style>`)
+ 
 });
