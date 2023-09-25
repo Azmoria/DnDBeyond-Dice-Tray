@@ -2,9 +2,9 @@ var childWindow;
 
 
 function resizeChild(child){
-    var winHeight =  window.innerHeight;
-    var winWidth =  window.innerWidth;
-    var childHTML =  child.document.documentElement;
+    let winHeight = window.innerHeight;
+    let winWidth = window.innerWidth;
+    let childHTML = child.document.documentElement;
     if(winHeight > (screen.height-2) && winWidth == screen.width) {
         childHTML.requestFullscreen();
     }
@@ -45,20 +45,20 @@ function diceTray() {
         childWindow.document.title = "Dice Tray - " +  document.title;
     }
     const body = childWindow.document.querySelector('body');
-    var canvas =  document.querySelector('.dice-rolling-panel__container');
+    let canvas =  document.querySelector('.dice-rolling-panel__container');
     const video =  childWindow.document.querySelector('#video0');
     body.setAttribute("id", 'diceTrayBody');
-    var stream =  canvas.captureStream(30);
+    let stream =  canvas.captureStream(30);
     if(video.srcObject == undefined || video.srcObject == null){
         stream.label =  window.location.href;
         video.srcObject =  stream;
     }
     else {
         canvas = document.querySelector('.dice-rolling-panel__container');
-        var newStream = canvas.captureStream(30);
+        let newStream = canvas.captureStream(30);
         newStream.label = window.location.href;
-        var n = 0;
-        var videoTags = childWindow.document.getElementsByTagName("video");
+        let n = 0;
+        let videoTags = childWindow.document.getElementsByTagName("video");
         let addRemove = "Video added to ";
         for (let i=0; i < videoTags.length; i++){
             if(videoTags[i].srcObject.label.indexOf("character") > -1 && window.location.href.indexOf("character") > -1) {
@@ -155,24 +155,9 @@ let dicetrayobserver = new MutationObserver((mutations) => {
   })
 });
 
-dicetrayobserver.observe(document.body, {
-    childList: true
-  , subtree: true
-  , attributes: false
-  , characterData: false
-});
+dicetrayobserver.observe(document.body, {childList: true, subtree: true, attributes: false, characterData: false});
 
-var styleobserver = new MutationObserver(function(mutations) {
-mutations.forEach(function(mutationRecord) {
-		let dicespeed= $('body').css('--dice-speed');
-	
-		window.requestAnimationFrame = function(e) { setTimeout(e, 36-dicespeed); } 
-        console.log('dice speed changed!');
-    });    
-});
 
-var target = document.getElementById('site');
-styleobserver.observe(target, { attributes : true, attributeFilter : ['style'] });
 
 
 function buildDiceTrayButton(){
@@ -185,7 +170,7 @@ function buildDiceTrayButton(){
         childWindow = diceTray();
         window.childWindow = childWindow;
         window.parent.childWindow = childWindow;  
-        var styleobserver = new MutationObserver(function(mutations) {
+        let styleobserver = new MutationObserver(function(mutations) {
 	    mutations.forEach(function(mutationRecord) {
 	    		let dicetraycolor = $('body').css('--dicetray-background-color');
 				let dicetrayimageurl = $('body').css('--dicetray-background-image');  
@@ -196,7 +181,7 @@ function buildDiceTrayButton(){
 		    });    
 		});
 
-		var target = document.getElementById('site');
+		let target = document.getElementById('site');
 		styleobserver.observe(target, { attributes : true, attributeFilter : ['style'] });
 	});
 }
