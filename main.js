@@ -17,6 +17,7 @@ function resizeChild(child){
 }
 
 function diceTray() {
+    const newDice = $("[data-floating-ui-portal] div[class*='AnchoredPopover_wrapper']").length>0;
     if( window.parent.childWindow != undefined && window.parent.childWindow.closed != true) {
         childWindow = window.parent.childWindow;
         window.childWindow = childWindow;
@@ -30,6 +31,8 @@ function diceTray() {
     }
     if(childWindow.document.querySelector('video') == undefined){
         childWindow.document.write('<video id="video0" muted autoplay></video>');
+        if(newDice)
+            childWindow.document.write('<video id="video1" muted autoplay></video>');
         resizeChild(childWindow);
     }
     if(window.location.href.indexOf("abovevtt") > -1) {
@@ -45,18 +48,40 @@ function diceTray() {
         childWindow.document.title = "Dice Tray - " +  document.title;
     }
     const body = childWindow.document.querySelector('body');
-    let canvas =  document.querySelector('.dice-rolling-panel__container');
+    let canvas = document.querySelector('.dice-rolling-panel__container');
+    let canvas2;
     const video =  childWindow.document.querySelector('#video0');
     body.setAttribute("id", 'diceTrayBody');
-    let stream =  canvas.captureStream(30);
+    let stream = canvas.captureStream(30);
+    let stream2;
+    const video2 = childWindow.document.querySelector('#video1');
+
+    if(newDice){
+        canvas = $('#character-tools-target canvas')[0];
+        canvas2 = $('#character-tools-target canvas')[1];
+        stream = canvas.captureStream(30);
+        stream2 = canvas2.captureStream(30);
+    }
+    body.setAttribute("id", 'diceTrayBody');
+
     if(video.srcObject == undefined || video.srcObject == null){
         stream.label =  window.location.href;
         video.srcObject =  stream;
+        if(newDice)
+            video2.srcObject = stream2;
     }
     else {
-        canvas = document.querySelector('.dice-rolling-panel__container');
+        if(!newDice)
+            canvas = document.querySelector('.dice-rolling-panel__container');
+        else{
+            canvas = $('#character-tools-target canvas')[0];
+            canvas2 = $('#character-tools-target canvas')[1];
+        }
         let newStream = canvas.captureStream(30);
         newStream.label = window.location.href;
+        let newStream2;
+        if(newDice)
+            newStream2 = canvas2.captureStream(30);
         let n = 0;
         let videoTags = childWindow.document.getElementsByTagName("video");
         let addRemove = "Video added to ";
@@ -92,6 +117,10 @@ function diceTray() {
         }
         const newVideo = childWindow.document.querySelector('#video'+n);
         newVideo.srcObject = newStream;
+        if(newDice){
+            const newVideo2 = childWindow.document.querySelector('#video'+n+1);
+            newVideo2.srcObject = newStream2;
+        }
         console.log(addRemove + childWindow.name);
     }
 
@@ -139,7 +168,9 @@ function diceTray() {
 let dicetrayobserver = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
     if (!mutation.addedNodes) return
-
+      if($("[data-floating-ui-portal] div[class*='AnchoredPopover_wrapper'] header").length>0 && $('.dice-die-button.diceTrayButton').length == 0){
+        buildDiceTrayButton();
+      }
     for (let i = 0; i < mutation.addedNodes.length; i++) {
       // do things to your newly added nodes here
       let node = mutation.addedNodes[i]
@@ -147,6 +178,7 @@ let dicetrayobserver = new MutationObserver((mutations) => {
         window.diceTrayAdded = true;
         buildDiceTrayButton();
       }
+
       if(node.className == 'dice-rolling-panel__container' && (window.parent.childWindow != undefined && window.parent.childWindow.closed != true)){
       	console.log('Added video to Dice Tray');
       	diceTray();
@@ -162,9 +194,29 @@ dicetrayobserver.observe(document.body, {childList: true, subtree: true, attribu
 
 function buildDiceTrayButton(){
 	$('#site').css('--theme-color', $('.ddbc-svg--themed path').css('fill'));
-	let statusButton = `<div class="dice-die-button diceTrayButton" role="button" tabindex="0" style='background: rgba(16, 22, 26, 0.86);'><span class="ct-character-header-desktop__button-label" style='color: #fff; left: 50%; position: absolute; transform: translateX(-50%); margin: 0px'>Dice Tray</span></div>`
-
-	$('.dice-toolbar__dropdown>div:last-of-type').prepend(statusButton)
+	let statusButton = $(`<div class="dice-die-button diceTrayButton" role="button" tabindex="0" style='background: rgba(16, 22, 26, 0.86);'><span class="ct-character-header-desktop__button-label" style='color: #fff; left: 50%; position: absolute; transform: translateX(-50%); margin: 0px'>Dice Tray</span></div>`)
+    const newDicePanel = $('[data-floating-ui-portal] div[class*="AnchoredPopover_wrapper"] header');
+    if(newDicePanel.length>0){
+        statusButton.css({
+            "color": "var(--ttui_grey-800)",
+            "border-radius": "7px",
+            "font-weight": "700",
+            "height": "30px",
+            "letter-spacing": ".063rem",
+            "width": "30%",
+            "box-shadow": "none",
+            "position": "absolute",
+            "left": "80px"
+        })
+        statusButton.find('span').css({
+            'left': '',
+            'transform': ''
+        })
+        newDicePanel.append(statusButton);
+    }
+    else{
+            $('.dice-toolbar__dropdown>div:last-of-type').prepend(statusButton)
+    }
 
 	$('.dice-die-button.diceTrayButton').off().on("click", function(){
         childWindow = diceTray();
