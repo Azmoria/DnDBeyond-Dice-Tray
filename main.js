@@ -118,7 +118,8 @@ function diceTray() {
         const newVideo = childWindow.document.querySelector('#video'+n);
         newVideo.srcObject = newStream;
         if(newDice){
-            const newVideo2 = childWindow.document.querySelector('#video'+n+1);
+            const n2 = n+1;
+            const newVideo2 = childWindow.document.querySelector('#video'+n2);
             newVideo2.srcObject = newStream2;
         }
         console.log(addRemove + childWindow.name);
