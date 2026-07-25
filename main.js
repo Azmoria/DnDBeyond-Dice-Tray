@@ -52,7 +52,7 @@ function diceTray() {
     let canvas2;
     const video =  childWindow.document.querySelector('#video0');
     body.setAttribute("id", 'diceTrayBody');
-    let stream = canvas.captureStream(30);
+    let stream;
     let stream2;
     const video2 = childWindow.document.querySelector('#video1');
 
@@ -61,6 +61,8 @@ function diceTray() {
         canvas2 = $('#character-tools-target canvas')[1];
         stream = canvas.captureStream(30);
         stream2 = canvas2.captureStream(30);
+    } else{
+       stream = canvas.captureStream(30);
     }
     body.setAttribute("id", 'diceTrayBody');
 
@@ -207,7 +209,10 @@ function buildDiceTrayButton(){
             "width": "30%",
             "box-shadow": "none",
             "position": "absolute",
-            "left": "80px"
+            "left": "80px",
+            "display": "flex",
+            "justify-content": "center",
+            "align-items": "center"
         })
         statusButton.find('span').css({
             'left': '',
@@ -216,7 +221,7 @@ function buildDiceTrayButton(){
         newDicePanel.append(statusButton);
     }
     else{
-            $('.dice-toolbar__dropdown>div:last-of-type').prepend(statusButton)
+        $('.dice-toolbar__dropdown>div:last-of-type').prepend(statusButton)
     }
 
 	$('.dice-die-button.diceTrayButton').off().on("click", function(){
